@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>归档 · 我的技术笔记</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📓</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">📓</span>
+        <span class="brand-name">我的技术笔记</span>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html">首页</a>
+        <a href="archive.html" class="is-active">归档</a>
+        <a href="about.html">关于</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <div class="page">
+      <h1>文章归档</h1>
+      <div id="archive" class="archive">
+        <p class="loading">正在加载…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> 我的技术笔记 · 用 HTML / CSS / JS 手写而成</p>
+    </div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+  <script>
+    (function () {
+      var el = document.getElementById('archive');
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      fetch('posts/posts.json').then(function (r) { return r.json(); }).then(function (posts) {
+        posts.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+        var byYear = {};
+        posts.forEach(function (p) {
+          var y = (p.date || '').slice(0, 4) || '未分类';
+          (byYear[y] = byYear[y] || []).push(p);
+        });
+        var years = Object.keys(byYear).sort(function (a, b) { return b - a; });
+        if (!years.length) { el.innerHTML = '<p class="empty">还没有文章</p>'; return; }
+        el.innerHTML = years.map(function (y) {
+          var items = byYear[y].map(function (p) {
+            return '<li>' +
+              '<a href="post.html?slug=' + encodeURIComponent(p.slug) + '">' + esc(p.title) + '</a>' +
+              '<time>' + esc((p.date || '').slice(5)) + '</time>' +
+            '</li>';
+          }).join('');
+          return '<section class="archive-year"><h2>' + esc(y) + ' 年 <span class="archive-count">' +
+            byYear[y].length + ' 篇</span></h2><ul class="archive-list">' + items + '</ul></section>';
+        }).join('');
+      }).catch(function () {
+        el.innerHTML = '<p class="empty">加载失败，请先运行 <code>node scripts/build-index.js</code>。</p>';
+      });
+    })();
+  </script>
+</body>
+</html>

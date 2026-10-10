@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的技术笔记</title>
+  <meta name="description" content="记录编程、课程与技术学习的技术笔记博客" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📓</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">📓</span>
+        <span class="brand-name">我的技术笔记</span>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html" class="is-active">首页</a>
+        <a href="archive.html">归档</a>
+        <a href="about.html">关于</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>你好，我是<span class="accent">刘唐泽</span> 👋</h1>
+      <p class="hero-sub">
+        这里记录我在编程、计算机课程与技术学习中的思考与笔记。
+        不追求篇幅，只追求「下次遇到问题时能翻回来用」。
+      </p>
+    </section>
+
+    <section class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input id="search-input" type="search" placeholder="搜索文章标题或标签…" aria-label="搜索文章" />
+      </div>
+      <div id="tag-filter" class="tag-filter"></div>
+    </section>
+
+    <section id="post-list" class="post-list">
+      <p class="loading">正在加载文章…</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> 我的技术笔记 · 用 HTML / CSS / JS 手写而成</p>
+    </div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

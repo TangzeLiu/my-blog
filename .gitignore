@@ -1,0 +1,9 @@
+# 依赖与编辑器
+node_modules/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 本地临时文件
+*.log

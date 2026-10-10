@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>关于 · 我的技术笔记</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📓</text></svg>" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">📓</span>
+        <span class="brand-name">我的技术笔记</span>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html">首页</a>
+        <a href="archive.html">归档</a>
+        <a href="about.html" class="is-active">关于</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <div class="page markdown-body">
+      <h1>关于</h1>
+      <p>你好，我是<strong>刘唐泽</strong> 👋，一名正在学习计算机与软件工程的学生。</p>
+      <p>这个博客是我的技术笔记本，用来记录编程实践、课程学习和踩坑经验。
+        内容主要围绕后端开发、软件测试与日常折腾，力求写得「将来自己也看得懂」。</p>
+      <h2>关于本站</h2>
+      <ul>
+        <li>纯 <strong>HTML / CSS / JavaScript</strong> 手写，无框架、无构建依赖。</li>
+        <li>文章使用 <strong>Markdown</strong> 撰写，页面端实时渲染。</li>
+        <li>托管于 <strong>GitHub Pages</strong>，推送即发布。</li>
+      </ul>
+      <h2>联系我</h2>
+      <ul>
+        <li>GitHub：<a href="https://github.com/" target="_blank" rel="noopener">@your-github</a></li>
+        <li>邮箱：<a href="mailto:you@example.com">you@example.com</a></li>
+      </ul>
+      <p class="muted" style="color:var(--text-muted);font-size:.9rem">
+        提示：以上信息请替换为你自己的真实链接。
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> 我的技术笔记 · 用 HTML / CSS / JS 手写而成</p>
+    </div>
+  </footer>
+
+  <script src="js/theme.js"></script>
+</body>
+</html>
