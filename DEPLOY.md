@@ -90,13 +90,19 @@ git push -u origin main
 
 ## 5. 开启 GitHub Pages
 
-1. 打开仓库页面 → **Settings**
-2. 左侧菜单找到 **Pages**
-3. **Source** 选择 `Deploy from a branch`
-4. **Branch** 选择 `main`，目录选 `/ (root)`
-5. 点 **Save**
-6. 等待 1~2 分钟，访问：
-   `https://<你的用户名>.github.io/my-blog/`
+> ⚠️ **注意别走错入口**：GitHub 有**两个 Settings**——
+> ① 右上角头像 → `Settings`（账号级，里面的 Pages 只管绑定自定义域名，**不是**这里）；
+> ② 仓库页面顶部标签栏的 `Settings`（仓库级，**要开网站用这个**）。
+> 最省事：直接打开 `https://github.com/<你的用户名>/my-blog/settings/pages`
+
+1. 打开仓库页面 → 点**仓库顶部标签栏**的 **Settings**（不是头像里的那个）
+2. 左侧菜单在 **Code and automation** 分组下找到 **Pages**
+3. **Build and deployment** 区块：
+   - **Source** 选择 `Deploy from a branch`
+   - **Branch** 选择 `main`，目录选 `/ (root)`
+4. 点 **Save**
+5. 等待 1~2 分钟，页面顶部会显示：
+   `Your site is live at https://<你的用户名>.github.io/my-blog/`
 
 ---
 
@@ -122,7 +128,65 @@ git push
 
 ---
 
-## 常见报错排查
+## 7. 修改域名（可选）
+
+分两种情况，先想清楚要哪种。
+
+### 路线 A：改默认的 github.io 地址（免费）
+
+默认地址结构是：`https://<用户名>.github.io/<仓库名>/`
+
+- **只改 `/仓库名/` 那段**：仓库 → `Settings` → `General` → 最上方 **Repository name** 改名。
+  改完记得同步本地远程地址：
+  ```bash
+  git remote set-url origin https://github.com/<用户名>/<新仓库名>.git
+  ```
+- **变成根地址（去掉后面的仓库名）**：把仓库名改成 `<用户名>.github.io`，
+  例如 `TangzeLiu.github.io`。这是 GitHub 的「用户站点」特殊仓库，地址会变为
+  `https://tangzeliu.github.io/`（根路径）。
+- **`<用户名>` 那段**：属于账号级操作（头像 → `Settings` → `Account` → `Change username`），
+  改动会导致所有仓库地址和旧链接失效，**慎用**。
+
+### 路线 B：绑定自己的域名（需先买域名）
+
+1. **买域名**：阿里云 / 腾讯云 / Cloudflare / Namecheap 等，几十元/年。
+2. **填域名**：仓库 → `Settings` → `Pages` → **Custom domain** 填你的域名
+   （apex 域名填 `example.com`，不要填 `www.example.com`）→ `Save`。
+   保存后 GitHub 会自动在仓库根目录提交一个 `CNAME` 文件。
+3. **配 DNS**：到域名商的 DNS 管理页添加记录：
+
+   **根域名（example.com）—— 添加 4 条 A 记录：**
+
+   | 类型 | 主机记录 | 记录值 |
+   |---|---|---|
+   | A | `@` | `185.199.108.153` |
+   | A | `@` | `185.199.109.153` |
+   | A | `@` | `185.199.110.153` |
+   | A | `@` | `185.199.111.153` |
+
+   **（可选）IPv6 —— 4 条 AAAA 记录：**
+   `2606:50c0:8000::153` / `2606:50c0:8001::153` / `2606:50c0:8002::153` / `2606:50c0:8003::153`
+
+   **想同时用 www.example.com —— 加 1 条 CNAME 记录：**
+
+   | 类型 | 主机记录 | 记录值 |
+   |---|---|---|
+   | CNAME | `www` | `<用户名>.github.io` |
+
+   > ⚠️ CNAME 的值**只填 `<用户名>.github.io`，不要带仓库名**；
+   > 也**不要**用通配符 `*` 记录，存在域名被他人接管的风险。
+
+4. **等待生效**：通常几分钟到几小时。可验证：
+   ```bash
+   dig example.com +noall +answer -t A
+   # 应看到 185.199.108~111.153 这几条
+   ```
+5. **开启 HTTPS**：DNS 生效后回到 `Settings → Pages`，勾选 **Enforce HTTPS**。
+
+> 修改域名后，博客代码里的链接都是相对路径，**无需改动任何页面代码**。
+> 若提示「域名已被占用」，说明该域名曾被另一个仓库绑定，需先去那个仓库删除自定义域。
+
+---
 
 ### ① 提示 `Author identity unknown` / 要求配置邮箱
 第 1 步没做或没生效，重新执行：
@@ -160,15 +224,57 @@ git push -u origin main
 git config --global core.quotepath false
 ```
 
-### ⑥ 网络超时 / 连接被重置
-可先配置代理（把端口换成你自己的），或改用 SSH 方式：
+### ⑥ 网络超时 / `Recv failure: Connection was reset`
+**现象**：`fatal: unable to access 'https://github.com/...': Recv failure: Connection was reset`
+或 `Connection timed out`。这是本机直连 GitHub 被中断导致的，**与命令无关**。
+
+**排查思路**：先看本机是否已经在跑代理（如 Clash / v2ray 等），再让 Git 走它。
+
+```bash
+# 1) 看看常见代理端口有没有在监听（7890 是 Clash 默认端口）
+netstat -ano | grep LISTENING | grep -E ":(7890|7891|10809|1080)"
+
+# 2) 用代理测试能否访问 GitHub（有返回 200 就说明代理可用）
+curl -I -x http://127.0.0.1:7890 https://github.com
+```
+
+**解决**：把代理端口写成 Git 的代理配置（端口按你实际的填，Clash 通常是 7890）：
+
+```bash
+git config --global http.proxy  http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+
+# 验证一下（能列出分支即通）
+git ls-remote --heads origin
+
+# 然后重新推送
+git push -u origin main
+```
+
+**注意**：代理关闭后 Git 会连不上，届时可临时取消代理：
+
+```bash
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+**备选方案 · 改用 SSH**（若代理也不稳）：
 ```bash
 # 生成密钥并添加公钥到 GitHub → Settings → SSH and GPG keys
 ssh-keygen -t ed25519 -C "你的邮箱@example.com"
 
-# 然后在关联远程时改用 SSH 地址
+# 关联远程时改用 SSH 地址
 git remote set-url origin git@github.com:<你的用户名>/my-blog.git
 ```
+
+> 小技巧：GitHub 的 22 端口在部分网络下也会被拦，可改用 443 端口走 SSH：
+> 在 `~/.ssh/config` 中加入
+> ```
+> Host github.com
+>   HostName ssh.github.com
+>   Port 443
+>   User git
+> ```
 
 ---
 

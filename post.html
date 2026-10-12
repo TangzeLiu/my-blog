@@ -42,6 +42,22 @@
 
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+  <script>
+    // MathJax 配置：支持 $...$ 行内公式与 $$...$$ 块级公式
+    // startup.typeset = false —— 不在页面加载时自动排版（此刻文章还没加载），
+    // 改由 js/post.js 在正文插入后再手动触发排版。
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/post.js"></script>
 </body>
