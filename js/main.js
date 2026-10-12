@@ -87,7 +87,8 @@
     });
   }
 
-  fetch('posts/posts.json')
+  // cache: 'no-store' —— 避免浏览器/CDN 缓存旧的文章索引（GitHub Pages 默认缓存 10 分钟）
+  fetch('posts/posts.json', { cache: 'no-store' })
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();

@@ -87,13 +87,14 @@
   }
 
   // 从索引里找到元数据，再加载对应的 md 文件
-  fetch('posts/posts.json')
+  // cache: 'no-store' —— 避免缓存旧的文章索引与正文
+  fetch('posts/posts.json', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var meta = (data || []).find(function (p) { return p.slug === slug; });
       if (!meta) throw new Error('未找到该文章：' + slug);
 
-      return fetch('posts/' + meta.file)
+      return fetch('posts/' + meta.file, { cache: 'no-store' })
         .then(function (r) {
           if (!r.ok) throw new Error('无法读取文章文件：' + meta.file);
           return r.text();
